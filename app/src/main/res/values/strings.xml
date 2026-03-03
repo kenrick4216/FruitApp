@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">FruitApp</string>
     <string name="take_measurement">Take Measurement</string>
-    <string name="see_history">View Past Measurements</string>
+    <string name="history">View Past Measurements</string>
+    <string name="back_button">Back</string>
+    <string name="expand_button_content_description">See more or less information about a measurement.</string>
+    <string name="measurement_desc">Reading on %s</string>
 </resources>

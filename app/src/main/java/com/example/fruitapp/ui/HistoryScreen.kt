@@ -38,18 +38,21 @@ import com.example.fruitapp.data.Measurement
 import java.time.LocalDateTime
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import com.example.fruitapp.data.measurements
 import androidx.compose.foundation.lazy.items
 
+/**
+ * History screen of the app
+ */
 @Composable
 fun HistoryScreen(
+    fruitUiState: FruitUiState,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         //contentPadding = innerPadding
     ) {
-        items(measurements) {
+        items(fruitUiState.measurements) {
             MeasurementItem(
                 measurement = it,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
@@ -58,6 +61,9 @@ fun HistoryScreen(
     }
 }
 
+/**
+ * Formatted measurements to be displayed in a list
+ */
 @Composable
 private fun MeasurementItem(
     measurement: Measurement,
@@ -112,6 +118,9 @@ private fun MeasurementItem(
     }
 }
 
+/**
+ * The fruit image displayed on the screen
+ */
 @Composable
 private fun FruitImage(
     @DrawableRes fruitImageResourceId: Int,
@@ -128,6 +137,9 @@ private fun FruitImage(
     )
 }
 
+/**
+ * The measurement information displayed on the screen without expanding the dropdown
+ */
 @Composable
 private fun FruitInformation(
     date: String,
@@ -147,6 +159,9 @@ private fun FruitInformation(
     }
 }
 
+/**
+ * The details button that expands the dropdown
+ */
 @Composable
 private fun FruitDetailsButton(
     expanded: Boolean,

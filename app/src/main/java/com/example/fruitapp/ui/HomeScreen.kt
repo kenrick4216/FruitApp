@@ -18,6 +18,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.fruitapp.R
 
+/**
+ * Home screen of the app
+ */
 @Composable
 fun FruitAppHomeScreen(
     modifier: Modifier = Modifier,

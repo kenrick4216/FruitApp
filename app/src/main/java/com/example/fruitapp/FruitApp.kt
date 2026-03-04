@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,22 +31,29 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.fruitapp.ui.FruitAppHomeScreen
+import com.example.fruitapp.ui.FruitViewModel
 import com.example.fruitapp.ui.HistoryScreen
+import com.example.fruitapp.ui.MeasurementScreen
 
 /**
  * Enum to represent the screens in the app
  */
 enum class FruitAppScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
+    Measurement(title = R.string.measurement),
     History(title = R.string.history)
 }
 
+/**
+ * The main app UI.
+ */
 @Composable
 fun FruitApp(
     navController: NavHostController = rememberNavController()
@@ -54,6 +62,9 @@ fun FruitApp(
     val currentScreen = FruitAppScreen.valueOf(
         backStackEntry?.destination?.route ?: FruitAppScreen.Start.name
     )
+
+    // Create ViewModel
+    val viewModel: FruitViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -75,6 +86,8 @@ fun FruitApp(
         }
     ) { innerPadding ->
 
+        val fruitUiState by viewModel.uiState.collectAsState()
+
         NavHost(
             navController = navController,
             startDestination = FruitAppScreen.Start.name,
@@ -83,31 +96,52 @@ fun FruitApp(
             composable(route = FruitAppScreen.Start.name) {
                 FruitAppHomeScreen (
                     onMeasureButtonClicked = {
-                        //logic for fetching data via wifi and processing
-                        navController.navigate(FruitAppScreen.History.name)
+                        viewModel.generateRandomMeasurement()
+                        navController.navigate(FruitAppScreen.Measurement.name)
                     },
                     onHistoryButtonClicked = { navController.navigate(FruitAppScreen.History.name) },
                     modifier = Modifier.padding(innerPadding)
                         .fillMaxSize()
                 )
             }
+            composable(route = FruitAppScreen.Measurement.name) {
+                MeasurementScreen(
+                    fruitUiState = fruitUiState,
+                    onSaveMeasurementButtonClicked = {
+                        viewModel.addMeasurement(fruitUiState.measurement)
+                        navController.navigate(FruitAppScreen.History.name) {
+                            popUpTo(FruitAppScreen.Start.name) {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    onDiscardMeasurementButtonClicked = {
+                        //viewModel.discardMeasurement()
+                        navController.navigate(FruitAppScreen.Start.name) {
+                            popUpTo(FruitAppScreen.Start.name) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                    modifier = Modifier.padding(innerPadding)
+                        .fillMaxSize()
+                )
+            }
             composable(route = FruitAppScreen.History.name) {
                 HistoryScreen(
+                    fruitUiState = fruitUiState,
                     innerPadding = innerPadding,
                     modifier = Modifier.padding(innerPadding)
                         .fillMaxSize()
                 )
             }
         }
-//        FruitAppHomeScreen(
-//            onMeasureButtonClicked = {},
-//            onHistoryButtonClicked = {},
-//            modifier = Modifier.padding(innerPadding)
-//                .fillMaxSize()
-//        )
     }
 }
 
+/**
+ * The top app bar that persists across screens
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FruitAppAppBar(

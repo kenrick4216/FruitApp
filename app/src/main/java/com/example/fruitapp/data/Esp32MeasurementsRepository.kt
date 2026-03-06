@@ -4,8 +4,6 @@ import com.example.fruitapp.model.Esp32Measurement
 import com.example.fruitapp.network.Esp32MeasurementApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 
 interface Esp32MeasurementsRepository {
     suspend fun getMeasurements(): Esp32Measurement

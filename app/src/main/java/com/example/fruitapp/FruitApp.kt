@@ -36,10 +36,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.fruitapp.ui.FruitAppHomeScreen
+import com.example.fruitapp.ui.screen.FruitAppHomeScreen
 import com.example.fruitapp.ui.FruitViewModel
-import com.example.fruitapp.ui.HistoryScreen
-import com.example.fruitapp.ui.MeasurementScreen
+import com.example.fruitapp.ui.screen.HistoryScreen
+import com.example.fruitapp.ui.screen.MeasurementScreen
 
 /**
  * Enum to represent the screens in the app

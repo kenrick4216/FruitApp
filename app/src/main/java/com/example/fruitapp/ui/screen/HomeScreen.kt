@@ -1,4 +1,4 @@
-package com.example.fruitapp.ui
+package com.example.fruitapp.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

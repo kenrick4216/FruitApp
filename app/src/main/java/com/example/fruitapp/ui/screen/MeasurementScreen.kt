@@ -1,7 +1,5 @@
-package com.example.fruitapp.ui
+package com.example.fruitapp.ui.screen
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,14 +21,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.fruitapp.ErrorScreen
-import com.example.fruitapp.LoadingScreen
 import com.example.fruitapp.R
-import com.example.fruitapp.model.Esp32Measurement
 import com.example.fruitapp.model.Measurement
+import com.example.fruitapp.ui.FruitUiState
 
 /**
  * The screen that displays the measurement information after taking a measurement
@@ -73,7 +68,7 @@ fun MeasurementDetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            FruitImage(measurement.reganMeasurement.imageSource)
+            MediumFruitImage(measurement.reganMeasurement.imageSource)
             FruitDetails(measurement)
 
             ButtonColumn(
@@ -88,7 +83,7 @@ fun MeasurementDetailsScreen(
  * The fruit image displayed on the screen
  */
 @Composable
-private fun FruitImage(
+private fun MediumFruitImage(
     imageSource: String,
     modifier: Modifier = Modifier
 ){

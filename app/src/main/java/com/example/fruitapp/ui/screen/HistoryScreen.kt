@@ -1,4 +1,4 @@
-package com.example.fruitapp.ui
+package com.example.fruitapp.ui.screen
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -37,9 +37,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.fruitapp.ErrorScreen
-import com.example.fruitapp.LoadingScreen
 import com.example.fruitapp.model.Measurement
+import com.example.fruitapp.ui.FruitUiState
 
 /**
  * History screen of the app
@@ -107,7 +106,7 @@ private fun MeasurementItem(
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.padding_small))
             ) {
-                FruitImage(measurement.reganMeasurement.imageSource)
+                SmallFruitImage(measurement.reganMeasurement.imageSource)
                 FruitInformation(
                     id = measurement.id,
                     modifier = Modifier.weight(1f)
@@ -134,7 +133,7 @@ private fun MeasurementItem(
 }
 
 @Composable
-private fun FruitImage(
+private fun SmallFruitImage(
     imageSource: String,
     modifier: Modifier = Modifier
 ) {

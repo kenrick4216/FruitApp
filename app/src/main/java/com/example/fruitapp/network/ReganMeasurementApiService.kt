@@ -7,6 +7,6 @@ import retrofit2.http.GET
  * Retrofit service object for creating api calls
  */
 interface ReganMeasurementApiService {
-    @GET("https://jsonplaceholder.typicode.com/posts/1")
+    @GET("trigger")
     suspend fun getMeasurements(): ReganMeasurement
 }

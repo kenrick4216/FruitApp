@@ -7,6 +7,6 @@ import retrofit2.http.GET
  * Retrofit service object for creating api calls
  */
 interface Esp32MeasurementApiService {
-    @GET("todos/1")
+    @GET("trigger")
     suspend fun getMeasurements(): Esp32Measurement
 }

@@ -13,6 +13,12 @@ class NetworkReganMeasurementsRepository(
     private val reganMeasurementApiService: ReganMeasurementApiService
 ) : ReganMeasurementsRepository {
     override suspend fun getMeasurements(): ReganMeasurement = withContext(Dispatchers.IO) {
-        reganMeasurementApiService.getMeasurements()
+        try {
+            reganMeasurementApiService.getMeasurements()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // handle error, maybe return default/fallback measurement
+            ReganMeasurement() // or null if your class allows
+        }
     }
 }

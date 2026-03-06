@@ -20,9 +20,9 @@ class DefaultAppContainer : AppContainer {
     }
 
     // Dummy URL that returns valid JSON (Todo #1)
-    private val esp32BaseUrl = "https://jsonplaceholder.typicode.com/"
+    private val esp32BaseUrl = "http://esp32_combined.local/"
 
-    private val reganBaseUrl = "https://freepng.com/uploads/images/202302/"
+    private val reganBaseUrl = "https://force_sensor.local/"
 
     private val esp32Retrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))

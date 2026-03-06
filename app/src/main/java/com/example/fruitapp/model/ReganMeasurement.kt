@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ReganMeasurement(
     @SerialName(value = "image_url") val imageSource: String = "", //imageUrl
-    @SerialName(value = "matrix") val forceSensorReading: String = ""
+    @SerialName(value = "matrix") val forceSensorReading: String = "No reading"
 ) {
     /**
      * Returns a string representation of the measurement

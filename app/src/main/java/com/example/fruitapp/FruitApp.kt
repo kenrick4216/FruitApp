@@ -94,8 +94,7 @@ fun FruitApp(
                         navController.navigate(FruitAppScreen.Measurement.name)
                     },
                     onHistoryButtonClicked = { navController.navigate(FruitAppScreen.History.name) },
-                    modifier = Modifier.padding(innerPadding)
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 )
             }
             composable(route = FruitAppScreen.Measurement.name) {
@@ -118,8 +117,7 @@ fun FruitApp(
                         }
                     },
                     retryAction = { viewModel.getMeasurement() },
-                    modifier = Modifier.padding(innerPadding)
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 )
             }
             composable(route = FruitAppScreen.History.name) {

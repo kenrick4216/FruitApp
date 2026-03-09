@@ -1,10 +1,16 @@
 package com.example.fruitapp.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "measurements")
 data class Measurement(
-    val esp32Measurement: Esp32Measurement,
-    val reganMeasurement: ReganMeasurement,
-    val image: Image,
-    val id: Int
+    @Embedded val esp32Measurement: Esp32Measurement,
+    @Embedded val reganMeasurement: ReganMeasurement,
+    @Embedded val image: Image,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0
 ) {
     /**
      * Returns a string representation of the measurement

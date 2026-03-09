@@ -7,8 +7,7 @@ import com.example.fruitapp.model.Measurement
  */
 sealed interface FruitUiState {
     data class Success(
-        val measurement: Measurement,
-        val measurements: List<Measurement> = listOf()
+        val measurement: Measurement
     ) : FruitUiState
     object Error : FruitUiState
     object Loading : FruitUiState

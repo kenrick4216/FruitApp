@@ -1,5 +1,6 @@
 package com.example.fruitapp.data
 
+import android.content.Context
 import com.example.fruitapp.network.Esp32CamApiService
 import retrofit2.Retrofit
 import com.example.fruitapp.network.Esp32MeasurementApiService
@@ -12,9 +13,10 @@ interface AppContainer {
     val esp32MeasurementsRepository: Esp32MeasurementsRepository
     val reganMeasurementsRepository: ReganMeasurementsRepository
     val esp32CamRepository: Esp32CamRepository
+    val measurementsRepository: MeasurementsRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context): AppContainer {
 
     // Configure Json to ignore fields it doesn't recognize
     private val json = Json {
@@ -62,6 +64,15 @@ class DefaultAppContainer : AppContainer {
     }
 
     override val esp32CamRepository: Esp32CamRepository by lazy {
-        NetworkEsp32CamRepository(esp32CamRetrofitService)
+        NetworkEsp32CamRepository(esp32CamRetrofitService, context)
+    }
+
+    override val measurementsRepository: MeasurementsRepository by lazy {
+        OfflineMeasurementsRepository(
+            MeasurementDatabase
+            .getDatabase(context)
+            .measurementDao(),
+            context
+        )
     }
 }

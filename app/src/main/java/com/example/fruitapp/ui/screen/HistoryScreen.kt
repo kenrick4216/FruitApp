@@ -40,6 +40,7 @@ import coil.request.ImageRequest
 import com.example.fruitapp.model.Image
 import com.example.fruitapp.model.Measurement
 import com.example.fruitapp.ui.FruitUiState
+import kotlin.collections.listOf
 
 /**
  * History screen of the app
@@ -51,27 +52,14 @@ fun HistoryScreen(
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    when (fruitUiState) {
-        is FruitUiState.Success -> {
-            LazyColumn(
-                modifier = modifier,
-                //contentPadding = innerPadding
-            ) {
-                items(items = fruitUiState.measurements) { measurement ->
-                    MeasurementItem(
-                        measurement = measurement,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                    )
-                }
-            }
-        }
-        is FruitUiState.Loading -> {
-            LoadingScreen(modifier = modifier.fillMaxSize())
-        }
-        is FruitUiState.Error -> {
-            ErrorScreen(
-                retryAction,
-                modifier = modifier.fillMaxSize()
+    LazyColumn(
+        modifier = modifier,
+        //contentPadding = innerPadding
+    ) {
+        items(items = listOf<Measurement>()) { measurement ->
+            MeasurementItem(
+                measurement = measurement,
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             )
         }
     }
@@ -133,14 +121,19 @@ private fun MeasurementItem(
     }
 }
 
+/**
+ * Small image for list items. Loads from filePath since these are saved records.
+ */
 @Composable
 private fun SmallFruitImage(
     image: Image,
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
-        model = ImageRequest.Builder(context = LocalContext.current).data(image)
-            .crossfade(true).build(),
+        model = ImageRequest.Builder(context = LocalContext.current)
+            .data(image.filePath)
+            .crossfade(true)
+            .build(),
         error = painterResource(R.drawable.ic_broken_image),
         placeholder = painterResource(R.drawable.loading_img),
         contentDescription = null,

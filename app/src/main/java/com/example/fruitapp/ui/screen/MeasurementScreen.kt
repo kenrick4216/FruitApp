@@ -82,7 +82,8 @@ fun MeasurementDetailsScreen(
 }
 
 /**
- * The fruit image displayed on the screen using the Bitmap from Image
+ * The fruit image displayed on the screen. 
+ * Prioritizes bitmap (for live previews) then filePath (for saved records).
  */
 @Composable
 private fun MediumFruitImage(
@@ -91,7 +92,7 @@ private fun MediumFruitImage(
 ){
     AsyncImage(
         model = ImageRequest.Builder(context = LocalContext.current)
-            .data(image.bitmap)
+            .data(image.bitmap ?: image.filePath)
             .crossfade(true)
             .build(),
         error = painterResource(R.drawable.ic_broken_image),

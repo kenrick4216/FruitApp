@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -40,6 +41,7 @@ import com.example.fruitapp.ui.screen.FruitAppHomeScreen
 import com.example.fruitapp.ui.FruitViewModel
 import com.example.fruitapp.ui.screen.HistoryScreen
 import com.example.fruitapp.ui.screen.MeasurementScreen
+import kotlinx.coroutines.launch
 
 /**
  * Enum to represent the screens in the app
@@ -61,6 +63,8 @@ fun FruitApp(
 
     // Create ViewModel using the Factory
     val viewModel: FruitViewModel = viewModel(factory = FruitViewModel.Factory)
+
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -101,10 +105,12 @@ fun FruitApp(
                 MeasurementScreen(
                     fruitUiState = viewModel.fruitUiState,
                     onSaveMeasurementButtonClicked = {
-                        viewModel.saveCurrentMeasurement()
-                        navController.navigate(FruitAppScreen.History.name) {
-                            popUpTo(FruitAppScreen.Start.name) {
-                                inclusive = false
+                        coroutineScope.launch {
+                            viewModel.saveCurrentMeasurement()
+                            navController.navigate(FruitAppScreen.History.name) {
+                                popUpTo(FruitAppScreen.Start.name) {
+                                    inclusive = false
+                                }
                             }
                         }
                     },

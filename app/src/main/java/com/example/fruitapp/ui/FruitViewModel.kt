@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.fruitapp.FruitAppApplication
 import com.example.fruitapp.data.Esp32CamRepository
 import com.example.fruitapp.data.Esp32MeasurementsRepository
+import com.example.fruitapp.data.MeasurementsRepository
 import com.example.fruitapp.data.ReganMeasurementsRepository
 import com.example.fruitapp.model.Measurement
 import kotlinx.coroutines.launch
@@ -24,7 +25,8 @@ import java.io.IOException
 class FruitViewModel (
     private val esp32MeasurementsRepository: Esp32MeasurementsRepository,
     private val reganMeasurementsRepository: ReganMeasurementsRepository,
-    private val esp32CamRepository: Esp32CamRepository
+    private val esp32CamRepository: Esp32CamRepository,
+    private val measurementsRepository: MeasurementsRepository
 ): ViewModel() {
 
     var fruitUiState: FruitUiState by mutableStateOf(FruitUiState.Loading)
@@ -36,18 +38,15 @@ class FruitViewModel (
 
     fun getMeasurement() {
         viewModelScope.launch {
-            val currentMeasurements = (fruitUiState as? FruitUiState.Success)?.measurements ?: listOf()
             fruitUiState = FruitUiState.Loading
             try {
                 val measurement = Measurement(
-                    esp32MeasurementsRepository.getMeasurements(),
-                    reganMeasurementsRepository.getMeasurements(),
-                    esp32CamRepository.getImage(),
-                    currentMeasurements.size + 1
+                    esp32Measurement = esp32MeasurementsRepository.getMeasurements(),
+                    reganMeasurement = reganMeasurementsRepository.getMeasurements(),
+                    image = esp32CamRepository.getImage()
                 )
                 fruitUiState = FruitUiState.Success(
-                    measurement = measurement,
-                    measurements = currentMeasurements
+                    measurement = measurement
                 )
             } catch (e: IOException) {
                 fruitUiState = FruitUiState.Error
@@ -61,11 +60,16 @@ class FruitViewModel (
      * Saves the current measurement to the history list.
      */
     fun saveCurrentMeasurement() {
-        val currentState = fruitUiState
-        if (currentState is FruitUiState.Success) {
-            fruitUiState = currentState.copy(
-                measurements = currentState.measurements + currentState.measurement
+        viewModelScope.launch {
+            val successState = fruitUiState as? FruitUiState.Success ?: return@launch
+            val currentMeasurement = successState.measurement
+            val bitmap = currentMeasurement.image.bitmap ?: return@launch
+            
+            val filePath = measurementsRepository.saveImageToInternalStorage(bitmap)
+            val measurementToSave = currentMeasurement.copy(
+                image = currentMeasurement.image.copy(filePath = filePath)
             )
+            measurementsRepository.insertMeasurement(measurementToSave)
         }
     }
 
@@ -76,10 +80,13 @@ class FruitViewModel (
                 val esp32MeasurementsRepository = application.container.esp32MeasurementsRepository
                 val reganMeasurementsRepository = application.container.reganMeasurementsRepository
                 val esp32CamRepository = application.container.esp32CamRepository
+                val measurementsRepository = application.container.measurementsRepository
+
                 FruitViewModel(
                     esp32MeasurementsRepository = esp32MeasurementsRepository,
                     reganMeasurementsRepository = reganMeasurementsRepository,
-                    esp32CamRepository = esp32CamRepository
+                    esp32CamRepository = esp32CamRepository,
+                    measurementsRepository = measurementsRepository
                 )
             }
         }

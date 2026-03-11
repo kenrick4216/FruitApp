@@ -31,3 +31,13 @@ measurement.
 ### Deleting Measurements
 On the history screen, selecting the dropdown menu and clicking on the trash icon will delete that
 specific measurement from memory. Clicking on `Clear All History` button will delete all past entries.
+
+# Code Reuse Declaration
+Most of the code used in this project were adapted from the [Android Basics with Compose](https://developer.android.com/courses/android-basics-compose/course)
+course. This project was built in parallel with Units 1 through 6 of the course.
+
+Gemini was also used to debug the project occasionally, especially when plugins and dependencies
+were conflicting.
+
+# Resource References
+amandagraphics. (n.d.). _Free vector yellow banana png_ [Photograph]. freepng. https://freepng.com/free-vector-yellow-banana-png-211

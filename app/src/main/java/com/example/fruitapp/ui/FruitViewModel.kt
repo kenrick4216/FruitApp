@@ -15,6 +15,7 @@ import com.example.fruitapp.data.Esp32MeasurementsRepository
 import com.example.fruitapp.data.MeasurementsRepository
 import com.example.fruitapp.data.ReganMeasurementsRepository
 import com.example.fruitapp.model.Measurement
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -41,10 +42,21 @@ class FruitViewModel (
         viewModelScope.launch {
             fruitUiState = FruitUiState.Loading
             try {
+                // Start the two measurement requests in parallel
+                val esp32Deferred = async { esp32MeasurementsRepository.getMeasurements() }
+                val reganDeferred = async { reganMeasurementsRepository.getMeasurements() }
+
+                // Wait for the sensors to finish first
+                val esp32Result = esp32Deferred.await()
+                val reganResult = reganDeferred.await()
+
+                // Now that measurements are done, fetch the image
+                val imageResult = esp32CamRepository.getImage()
+
                 val measurement = Measurement(
-                    esp32Measurement = esp32MeasurementsRepository.getMeasurements(),
-                    reganMeasurement = reganMeasurementsRepository.getMeasurements(),
-                    image = esp32CamRepository.getImage(),
+                    esp32Measurement = esp32Result,
+                    reganMeasurement = reganResult,
+                    image = imageResult,
                     date = LocalDateTime.now()
                 )
                 fruitUiState = FruitUiState.Success(

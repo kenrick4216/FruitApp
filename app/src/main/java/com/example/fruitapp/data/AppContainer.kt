@@ -23,7 +23,6 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         ignoreUnknownKeys = true 
     }
 
-    // Dummy URL that returns valid JSON (Todo #1)
     private val esp32BaseUrl = "http://esp32_combined.local/"
     private val reganBaseUrl = "http://force_sensor.local/"
     private val esp32CamBaseUrl = "http://esp32_cam_image.local/"

@@ -50,6 +50,10 @@ data class Esp32Measurement(
      */
     @SuppressLint("DefaultLocale")
     override fun toString(): String {
+        if (isDefault()) {
+            return "No sensor array data received."
+        }
+
         return String.format("Fluorescence: %.2f\nNIR 680 Reading: %.2f\n"
                 + "NIR 705 Reading: %.2f\nNIR 730 Reading: %.2f\nNIR 760 Reading: %.2f\n"
                 + "NIR 810 Reading: %.2f\nNIR 860 Reading: %.2f\nNIR 940 Reading: %.2f\n"

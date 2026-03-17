@@ -20,6 +20,10 @@ data class PressureMeasurement(
      */
     @SuppressLint("DefaultLocale")
     override fun toString(): String {
+        if (isDefault()) {
+            return "No pressure sensor data received."
+        }
+
         return String.format("Weight: %.2f", forceSensorReading)
     }
 }

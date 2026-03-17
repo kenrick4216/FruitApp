@@ -16,21 +16,9 @@ data class Measurement(
     val id: Int = 0
 ) {
     /**
-     * Checks if the measurement is the default value
-     */
-    fun isDefault(): Boolean {
-        return esp32Measurement.isDefault() &&
-                pressureMeasurement.isDefault() &&
-                image.isDefault()
-    }
-
-    /**
      * Returns a string representation of the measurement
      */
     override fun toString(): String {
-        if (isDefault()) {
-            return "No Measurement Received."
-        }
         return "$esp32Measurement\n$pressureMeasurement"
     }
 }

@@ -65,8 +65,8 @@ class FruitViewModel (
 
                 var prediction: String = "No Prediction"
 
-                //if all 3 measurements were successfully fetched, predict the ripeness
-                if (!esp32Result.isDefault() && !pressureResult.isDefault() && !imageResult.isDefault()) {
+                //if all measurements were successfully fetched, predict the ripeness
+                if (!esp32Result.isDefault() && !pressureResult.isDefault()) {
                     // Generate prediction using the ONNX model
                     prediction = fruitPredictor.predict(esp32Result, pressureResult)
                 }

@@ -10,6 +10,13 @@ import androidx.room.Ignore
 data class Image(
     val filePath: String? = null
 ) {
+    /**
+     * Checks if the image is the default value
+     */
+    fun isDefault(): Boolean {
+        return this.filePath == null
+    }
+
     @Ignore
     var bitmap: Bitmap? = null
 

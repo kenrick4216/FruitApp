@@ -56,17 +56,22 @@ class FruitViewModel (
                 // Start the two measurement requests in parallel
                 val esp32Deferred = async { esp32MeasurementsRepository.getMeasurements() }
                 val pressureDeferred = async { pressureMeasurementsRepository.getMeasurements() }
+                val imageDeferred = async { esp32CamRepository.getImage() }
 
                 // Wait for the sensors to finish first
                 val esp32Result = esp32Deferred.await()
                 val pressureResult = pressureDeferred.await()
+                val imageResult = imageDeferred.await()
 
-                // Generate prediction using the ONNX model
-                val prediction = fruitPredictor.predict(esp32Result, pressureResult)
+                var prediction: String = "No Prediction"
 
-                // Now that measurements are done, fetch the image
-                val imageResult = esp32CamRepository.getImage()
+                //if all 3 measurements were successfully fetched, predict the ripeness
+                if (!esp32Result.isDefault() && !pressureResult.isDefault() && !imageResult.isDefault()) {
+                    // Generate prediction using the ONNX model
+                    prediction = fruitPredictor.predict(esp32Result, pressureResult)
+                }
 
+                // Create the measurement object
                 val measurement = Measurement(
                     esp32Measurement = esp32Result,
                     pressureMeasurement = pressureResult,

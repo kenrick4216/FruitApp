@@ -26,6 +26,26 @@ data class Esp32Measurement(
 ) {
 
     /**
+     * Checks if the measurement is the default value
+     */
+    fun isDefault(): Boolean {
+        return this.fluorescenceReading == 0.0f &&
+                this.nir680Reading == 0.0f &&
+                this.nir705Reading == 0.0f &&
+                this.nir730Reading == 0.0f &&
+                this.nir760Reading == 0.0f &&
+                this.nir810Reading == 0.0f &&
+                this.nir860Reading == 0.0f &&
+                this.nir940Reading == 0.0f &&
+                this.lidarReading == 0.0f &&
+                this.ethyleneConcentration == 0 &&
+                this.airQuality == 0 &&
+                this.mq3Reading == 0 &&
+                this.mq4Reading == 0 &&
+                this.mq5Reading == 0
+    }
+
+    /**
      * Returns a string representation of the measurement
      */
     @SuppressLint("DefaultLocale")

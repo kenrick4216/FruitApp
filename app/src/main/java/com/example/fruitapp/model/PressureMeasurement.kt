@@ -1,16 +1,18 @@
 package com.example.fruitapp.model
 
+import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PressureMeasurement(
-    @SerialName(value = "matrix") val forceSensorReading: String = "No reading"
+    @SerialName(value = "matrix") val forceSensorReading: Float = 0.0f
 ) {
     /**
      * Returns a string representation of the measurement
      */
+    @SuppressLint("DefaultLocale")
     override fun toString(): String {
-        return String.format("Weight: %s", forceSensorReading)
+        return String.format("Weight: %.2f", forceSensorReading)
     }
 }

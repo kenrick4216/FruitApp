@@ -9,6 +9,9 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 
+/**
+ * Dependency Injection container at the application level.
+ */
 interface AppContainer {
     val esp32MeasurementsRepository: Esp32MeasurementsRepository
     val pressureMeasurementsRepository: PressureMeasurementsRepository
@@ -16,41 +19,62 @@ interface AppContainer {
     val measurementsRepository: MeasurementsRepository
 }
 
+/**
+ * [AppContainer] implementation that provides dependencies.
+ */
 class DefaultAppContainer(private val context: Context): AppContainer {
 
-    // Configure Json to ignore fields it doesn't recognize
+    /**
+     * JSON configuration for serialization.
+     */
     private val json = Json {
         ignoreUnknownKeys = true 
     }
 
-    // Dummy URL that returns valid JSON (Todo #1)
     private val esp32BaseUrl = "http://esp32_combined.local/"
     private val pressureBaseUrl = "http://force_sensor.local/"
     private val esp32CamBaseUrl = "http://esp32_cam_image.local/"
 
+    /**
+     * Retrofit instance for ESP32 measurement API.
+     */
     private val esp32Retrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(esp32BaseUrl)
         .build()
 
+    /**
+     * Retrofit instance for Pressure sensor API.
+     */
     private val pressureRetrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(pressureBaseUrl)
         .build()
 
-    // No JSON converter factory here because we are fetching a raw image
+    /**
+     * Retrofit instance for ESP32 camera API.
+     */
     private val esp32CamRetrofit: Retrofit = Retrofit.Builder()
         .baseUrl(esp32CamBaseUrl)
         .build()
 
+    /**
+     * Lazily initialized ESP32 measurement API service.
+     */
     private val esp32RetrofitService: Esp32MeasurementApiService by lazy {
         esp32Retrofit.create(Esp32MeasurementApiService::class.java)
     }
 
+    /**
+     * Lazily initialized Pressure measurement API service.
+     */
     private val pressureRetrofitService: PressureMeasurementApiService by lazy {
         pressureRetrofit.create(PressureMeasurementApiService::class.java)
     }
 
+    /**
+     * Lazily initialized ESP32 camera API service.
+     */
     private val esp32CamRetrofitService: Esp32CamApiService by lazy {
         esp32CamRetrofit.create(Esp32CamApiService::class.java)
     }

@@ -22,7 +22,8 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 /**
- * View Model for the Fruit App
+ * ViewModel for the Fruit App.
+ * Handles fetching live sensor data and saving measurements to history.
  */
 class FruitViewModel (
     private val esp32MeasurementsRepository: Esp32MeasurementsRepository,
@@ -31,6 +32,9 @@ class FruitViewModel (
     private val measurementsRepository: MeasurementsRepository
 ): ViewModel() {
 
+    /**
+     * The current UI state of the fruit measurement process.
+     */
     var fruitUiState: FruitUiState by mutableStateOf(FruitUiState.Loading)
         private set
 
@@ -38,6 +42,11 @@ class FruitViewModel (
         getMeasurement()
     }
 
+    /**
+     * Fetches a new measurement from all sensors.
+     * Sensors are queried in parallel where possible, with the camera image
+     * being fetched after the initial sensor data is received.
+     */
     fun getMeasurement() {
         viewModelScope.launch {
             fruitUiState = FruitUiState.Loading
@@ -71,7 +80,8 @@ class FruitViewModel (
     }
 
     /**
-     * Saves the current measurement to the history list.
+     * Saves the current measurement from the [FruitUiState.Success] state to the history database.
+     * This includes saving the bitmap to internal storage and persisting the file path.
      */
     fun saveCurrentMeasurement() {
         viewModelScope.launch {
@@ -88,6 +98,9 @@ class FruitViewModel (
     }
 
     companion object {
+        /**
+         * Factory to create the [FruitViewModel] with required dependencies.
+         */
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as FruitAppApplication)

@@ -13,7 +13,7 @@ import com.example.fruitapp.FruitAppApplication
 import com.example.fruitapp.data.Esp32CamRepository
 import com.example.fruitapp.data.Esp32MeasurementsRepository
 import com.example.fruitapp.data.MeasurementsRepository
-import com.example.fruitapp.data.ReganMeasurementsRepository
+import com.example.fruitapp.data.PressureMeasurementsRepository
 import com.example.fruitapp.model.Measurement
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -26,7 +26,7 @@ import java.time.LocalDateTime
  */
 class FruitViewModel (
     private val esp32MeasurementsRepository: Esp32MeasurementsRepository,
-    private val reganMeasurementsRepository: ReganMeasurementsRepository,
+    private val pressureMeasurementsRepository: PressureMeasurementsRepository,
     private val esp32CamRepository: Esp32CamRepository,
     private val measurementsRepository: MeasurementsRepository
 ): ViewModel() {
@@ -44,18 +44,18 @@ class FruitViewModel (
             try {
                 // Start the two measurement requests in parallel
                 val esp32Deferred = async { esp32MeasurementsRepository.getMeasurements() }
-                val reganDeferred = async { reganMeasurementsRepository.getMeasurements() }
+                val pressureDeferred = async { pressureMeasurementsRepository.getMeasurements() }
 
                 // Wait for the sensors to finish first
                 val esp32Result = esp32Deferred.await()
-                val reganResult = reganDeferred.await()
+                val pressureResult = pressureDeferred.await()
 
                 // Now that measurements are done, fetch the image
                 val imageResult = esp32CamRepository.getImage()
 
                 val measurement = Measurement(
                     esp32Measurement = esp32Result,
-                    reganMeasurement = reganResult,
+                    pressureMeasurement = pressureResult,
                     image = imageResult,
                     date = LocalDateTime.now()
                 )
@@ -92,13 +92,13 @@ class FruitViewModel (
             initializer {
                 val application = (this[APPLICATION_KEY] as FruitAppApplication)
                 val esp32MeasurementsRepository = application.container.esp32MeasurementsRepository
-                val reganMeasurementsRepository = application.container.reganMeasurementsRepository
+                val pressureMeasurementsRepository = application.container.pressureMeasurementsRepository
                 val esp32CamRepository = application.container.esp32CamRepository
                 val measurementsRepository = application.container.measurementsRepository
 
                 FruitViewModel(
                     esp32MeasurementsRepository = esp32MeasurementsRepository,
-                    reganMeasurementsRepository = reganMeasurementsRepository,
+                    pressureMeasurementsRepository = pressureMeasurementsRepository,
                     esp32CamRepository = esp32CamRepository,
                     measurementsRepository = measurementsRepository
                 )

@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 @Entity(tableName = "measurements")
 data class Measurement(
     @Embedded val esp32Measurement: Esp32Measurement,
-    @Embedded val reganMeasurement: ReganMeasurement,
+    @Embedded val pressureMeasurement: PressureMeasurement,
     @Embedded val image: Image,
     val date: LocalDateTime = LocalDateTime.now(),
     @PrimaryKey(autoGenerate = true)
@@ -18,6 +18,6 @@ data class Measurement(
      * Returns a string representation of the measurement
      */
     override fun toString(): String {
-        return "$esp32Measurement\n$reganMeasurement"
+        return "$esp32Measurement\n$pressureMeasurement"
     }
 }

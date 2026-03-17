@@ -4,14 +4,14 @@ import android.content.Context
 import com.example.fruitapp.network.Esp32CamApiService
 import retrofit2.Retrofit
 import com.example.fruitapp.network.Esp32MeasurementApiService
-import com.example.fruitapp.network.ReganMeasurementApiService
+import com.example.fruitapp.network.PressureMeasurementApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 
 interface AppContainer {
     val esp32MeasurementsRepository: Esp32MeasurementsRepository
-    val reganMeasurementsRepository: ReganMeasurementsRepository
+    val pressureMeasurementsRepository: PressureMeasurementsRepository
     val esp32CamRepository: Esp32CamRepository
     val measurementsRepository: MeasurementsRepository
 }
@@ -23,8 +23,9 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         ignoreUnknownKeys = true 
     }
 
+    // Dummy URL that returns valid JSON (Todo #1)
     private val esp32BaseUrl = "http://esp32_combined.local/"
-    private val reganBaseUrl = "http://force_sensor.local/"
+    private val pressureBaseUrl = "http://force_sensor.local/"
     private val esp32CamBaseUrl = "http://esp32_cam_image.local/"
 
     private val esp32Retrofit: Retrofit = Retrofit.Builder()
@@ -32,9 +33,9 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         .baseUrl(esp32BaseUrl)
         .build()
 
-    private val reganRetrofit: Retrofit = Retrofit.Builder()
+    private val pressureRetrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .baseUrl(reganBaseUrl)
+        .baseUrl(pressureBaseUrl)
         .build()
 
     // No JSON converter factory here because we are fetching a raw image
@@ -46,8 +47,8 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         esp32Retrofit.create(Esp32MeasurementApiService::class.java)
     }
 
-    private val reganRetrofitService: ReganMeasurementApiService by lazy {
-        reganRetrofit.create(ReganMeasurementApiService::class.java)
+    private val pressureRetrofitService: PressureMeasurementApiService by lazy {
+        pressureRetrofit.create(PressureMeasurementApiService::class.java)
     }
 
     private val esp32CamRetrofitService: Esp32CamApiService by lazy {
@@ -58,8 +59,8 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         NetworkEsp32MeasurementsRepository(esp32RetrofitService)
     }
 
-    override val reganMeasurementsRepository: ReganMeasurementsRepository by lazy {
-        NetworkReganMeasurementsRepository(reganRetrofitService)
+    override val pressureMeasurementsRepository: PressureMeasurementsRepository by lazy {
+        NetworkPressureMeasurementsRepository(pressureRetrofitService)
     }
 
     override val esp32CamRepository: Esp32CamRepository by lazy {

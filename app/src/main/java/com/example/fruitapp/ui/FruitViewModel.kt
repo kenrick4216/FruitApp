@@ -1,5 +1,6 @@
 package com.example.fruitapp.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,8 +19,6 @@ import com.example.fruitapp.data.PressureMeasurementsRepository
 import com.example.fruitapp.model.Measurement
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 import java.time.LocalDateTime
 
 /**
@@ -79,9 +78,8 @@ class FruitViewModel(
                     date = LocalDateTime.now()
                 )
                 fruitUiState = FruitUiState.Success(measurement = measurement)
-            } catch (e: IOException) {
-                fruitUiState = FruitUiState.Error
-            } catch (e: HttpException) {
+            } catch (e: Exception) {
+                Log.e("FruitViewModel", "Error fetching measurements", e)
                 fruitUiState = FruitUiState.Error
             }
         }
@@ -96,11 +94,12 @@ class FruitViewModel(
         viewModelScope.launch {
             lidarUiState = LidarUiState.Loading
             try {
+                Log.d("FruitViewModel", "Triggering Lidar Scan...")
                 val result = esp32MeasurementsRepository.getLidarScan()
+                Log.d("FruitViewModel", "Lidar Scan Result Received: ${result.scan.size} points")
                 lidarUiState = LidarUiState.Success(lidarScan = result)
-            } catch (e: IOException) {
-                lidarUiState = LidarUiState.Error
-            } catch (e: HttpException) {
+            } catch (e: Exception) {
+                Log.e("FruitViewModel", "Error in getLidarScan", e)
                 lidarUiState = LidarUiState.Error
             }
         }

@@ -11,7 +11,6 @@ interface Esp32MeasurementApiService {
     @GET("trigger")
     suspend fun getMeasurements(): Esp32Measurement
 
-    // NEW: 2D lidar scan endpoint
     @GET("lidar-scan")
     suspend fun getLidarScan(): LidarScan
 }

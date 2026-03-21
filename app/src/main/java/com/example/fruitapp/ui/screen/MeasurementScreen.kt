@@ -2,7 +2,6 @@ package com.example.fruitapp.ui.screen
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,15 +31,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.fruitapp.R
 import com.example.fruitapp.model.Image
+import com.example.fruitapp.model.LidarPoint
 import com.example.fruitapp.model.LidarScan
 import com.example.fruitapp.model.Measurement
 import com.example.fruitapp.ui.FruitUiState
 import com.example.fruitapp.ui.LidarUiState
+import com.example.fruitapp.ui.theme.FruitAppTheme
+import java.time.LocalDateTime
 
 /**
  * The screen that displays the measurement information after taking a measurement
@@ -95,27 +99,25 @@ fun MeasurementDetailsScreen(
             )
             FruitDetails(measurement)
 
-            // NEW: Lidar scan section
-            LidarScanSection(
-                lidarUiState = lidarUiState,
-                onLidarScanButtonClicked = onLidarScanButtonClicked
-            )
+            // Show result based on state
+            LidarResultsSection(lidarUiState = lidarUiState)
 
             ButtonColumn(
                 onSaveMeasurementButtonClicked = onSaveMeasurementButtonClicked,
-                onDiscardMeasurementButtonClicked = onDiscardMeasurementButtonClicked
+                onDiscardMeasurementButtonClicked = onDiscardMeasurementButtonClicked,
+                onLidarScanButtonClicked = onLidarScanButtonClicked,
+                lidarUiState = lidarUiState
             )
         }
     }
 }
 
 /**
- * NEW: Section that shows the 2D Scan button and the resulting graph
+ * Section that shows the resulting graph or loading state for Lidar
  */
 @Composable
-private fun LidarScanSection(
+private fun LidarResultsSection(
     lidarUiState: LidarUiState,
-    onLidarScanButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -124,19 +126,6 @@ private fun LidarScanSection(
             .fillMaxWidth()
             .padding(dimensionResource(R.dimen.padding_medium))
     ) {
-        // 2D Scan button
-        Button(
-            onClick = onLidarScanButtonClicked,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = lidarUiState !is LidarUiState.Loading
-        ) {
-            Text(
-                text = if (lidarUiState is LidarUiState.Loading) "Scanning..." else "2D Scan",
-                style = MaterialTheme.typography.labelLarge
-            )
-        }
-
-        // Show result based on state
         when (lidarUiState) {
             is LidarUiState.Idle -> { /* nothing shown yet */ }
             is LidarUiState.Loading -> {
@@ -171,7 +160,7 @@ private fun LidarScanSection(
 }
 
 /**
- * NEW: Draws the 2D fruit profile graph from lidar scan data
+ * Draws the 2D fruit profile graph from lidar scan data
  * X axis = step (horizontal position)
  * Y axis = distance in mm (inverted so fruit surface appears as a bump)
  */
@@ -194,9 +183,10 @@ private fun LidarGraph(
             .padding(16.dp)
     ) {
         val points = lidarScan.scan
-        val maxStep = points.maxOf { it.step }.toFloat()
+        val maxStep = points.maxOf { it.step }.toFloat().coerceAtLeast(1f)
         val maxMm = points.maxOf { it.mm }.toFloat()
         val minMm = points.minOf { it.mm }.toFloat()
+        val diffMm = (maxMm - minMm).coerceAtLeast(1f)
 
         val width = size.width
         val height = size.height
@@ -220,7 +210,7 @@ private fun LidarGraph(
         points.forEachIndexed { index, point ->
             val x = (point.step / maxStep) * width
             // Invert Y: lower mm = closer to sensor = higher on graph
-            val y = height - ((point.mm - minMm) / (maxMm - minMm)) * height
+            val y = height - ((point.mm - minMm) / diffMm) * height
 
             if (index == 0) path.moveTo(x, y)
             else path.lineTo(x, y)
@@ -273,12 +263,14 @@ private fun FruitDetails(
 }
 
 /**
- * The two buttons at the bottom of the screen after obtaining a measurement
+ * The buttons at the bottom of the screen after obtaining a measurement
  */
 @Composable
 private fun ButtonColumn(
     onSaveMeasurementButtonClicked: () -> Unit,
     onDiscardMeasurementButtonClicked: () -> Unit,
+    onLidarScanButtonClicked: () -> Unit,
+    lidarUiState: LidarUiState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -289,6 +281,10 @@ private fun ButtonColumn(
     ) {
         SaveMeasurementButton(onSaveMeasurementButtonClicked = onSaveMeasurementButtonClicked)
         DiscardMeasurementButton(onDiscardMeasurementButtonClicked = onDiscardMeasurementButtonClicked)
+        LidarScanButton(
+            onLidarScanButtonClicked = onLidarScanButtonClicked,
+            lidarUiState = lidarUiState
+        )
     }
 }
 
@@ -327,5 +323,83 @@ private fun DiscardMeasurementButton(
             text = stringResource(R.string.discard_measurement),
             style = MaterialTheme.typography.labelLarge
         )
+    }
+}
+
+/**
+ * Lidar Scan button
+ */
+@Composable
+private fun LidarScanButton(
+    onLidarScanButtonClicked: () -> Unit,
+    lidarUiState: LidarUiState,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onLidarScanButtonClicked,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = lidarUiState !is LidarUiState.Loading
+    ) {
+        Text(
+            text = if (lidarUiState is LidarUiState.Loading) "Scanning..." else "2D Scan",
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MeasurementScreenPreview() {
+    FruitAppTheme {
+        Surface {
+            MeasurementScreen(
+                fruitUiState = FruitUiState.Success(
+                    measurement = Measurement(
+                        esp32Measurement = com.example.fruitapp.model.Esp32Measurement(),
+                        pressureMeasurement = com.example.fruitapp.model.PressureMeasurement(),
+                        image = Image(),
+                        prediction = "Banana",
+                        date = LocalDateTime.now()
+                    )
+                ),
+                lidarUiState = LidarUiState.Idle,
+                onSaveMeasurementButtonClicked = {},
+                onDiscardMeasurementButtonClicked = {},
+                onLidarScanButtonClicked = {},
+                retryAction = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MeasurementScreenLidarSuccessPreview() {
+    val samplePoints = listOf(
+        LidarPoint(0, 100), LidarPoint(10, 95), LidarPoint(20, 80),
+        LidarPoint(30, 70), LidarPoint(40, 65), LidarPoint(50, 60),
+        LidarPoint(60, 65), LidarPoint(70, 75), LidarPoint(80, 90),
+        LidarPoint(90, 105)
+    )
+    
+    FruitAppTheme {
+        Surface {
+            MeasurementScreen(
+                fruitUiState = FruitUiState.Success(
+                    measurement = Measurement(
+                        esp32Measurement = com.example.fruitapp.model.Esp32Measurement(),
+                        pressureMeasurement = com.example.fruitapp.model.PressureMeasurement(),
+                        image = Image(),
+                        prediction = "Banana",
+                        date = LocalDateTime.now()
+                    )
+                ),
+                lidarUiState = LidarUiState.Success(lidarScan = LidarScan(samplePoints)),
+                onSaveMeasurementButtonClicked = {},
+                onDiscardMeasurementButtonClicked = {},
+                onLidarScanButtonClicked = {},
+                retryAction = {}
+            )
+        }
     }
 }

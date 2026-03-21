@@ -110,6 +110,7 @@ fun FruitApp(
             composable(route = FruitAppScreen.Measurement.name) {
                 MeasurementScreen(
                     fruitUiState = viewModel.fruitUiState,
+                    lidarUiState = viewModel.lidarUiState,
                     onSaveMeasurementButtonClicked = {
                         coroutineScope.launch {
                             viewModel.saveCurrentMeasurement()
@@ -128,6 +129,7 @@ fun FruitApp(
                             }
                         }
                     },
+                    onLidarScanButtonClicked = { viewModel.getLidarScan() },
                     retryAction = { viewModel.getMeasurement() },
                     modifier = Modifier.fillMaxSize()
                 )

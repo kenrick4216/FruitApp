@@ -1,6 +1,7 @@
 package com.example.fruitapp.network
 
 import com.example.fruitapp.model.Esp32Measurement
+import com.example.fruitapp.model.LidarScan
 import retrofit2.http.GET
 
 /**
@@ -9,4 +10,8 @@ import retrofit2.http.GET
 interface Esp32MeasurementApiService {
     @GET("trigger")
     suspend fun getMeasurements(): Esp32Measurement
+
+    // NEW: 2D lidar scan endpoint
+    @GET("lidar-scan")
+    suspend fun getLidarScan(): LidarScan
 }

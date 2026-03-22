@@ -156,6 +156,8 @@ private fun LidarResultsSection(
 
 /**
  * Draws the 2D fruit profile graph from lidar scan data
+ * X axis = step (horizontal position)
+ * Y axis = distance in mm (inverted so fruit surface appears as a bump)
  */
 @Composable
 private fun LidarGraph(

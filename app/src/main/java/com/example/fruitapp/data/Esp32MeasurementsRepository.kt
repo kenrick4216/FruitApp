@@ -34,7 +34,8 @@ class NetworkEsp32MeasurementsRepository(
             esp32MeasurementApiService.getMeasurements()
         } catch (e: Exception) {
             e.printStackTrace()
-            Esp32Measurement()
+            // handle error, maybe return default/fallback measurement
+            Esp32Measurement() // or null if your class allows
         }
     }
 
@@ -47,6 +48,9 @@ class NetworkEsp32MeasurementsRepository(
         }
     }
 
+    /**
+     * Streams Lidar points from the ESP32 via a WebSocket connection.
+     */
     override fun getLidarStreaming(): Flow<LidarPoint> = callbackFlow {
         val request = Request.Builder()
             .url("ws://esp32_combined.local:81") // ESP32 WebSocket port

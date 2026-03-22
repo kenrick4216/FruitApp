@@ -45,8 +45,19 @@ class NetworkLidarRepository(
             .build()
 
         val listener = object : WebSocketListener() {
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                // Arduino is Scenario B, needs the one line to send start_scan after WebSocket connects.
+                webSocket.send("start_scan")
+            }
+
             override fun onMessage(webSocket: WebSocket, text: String) {
                 try {
+                    // Check if it is the done signal
+                    if (text.contains("\"done\": true")) {
+                        channel.close()
+                        return
+                    }
+
                     val point = json.decodeFromString<LidarPoint>(text)
                     trySend(point)
                 } catch (e: Exception) {
